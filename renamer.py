@@ -23,26 +23,34 @@ path = args.folder
 
 def search_folder(folder: Path):
     for file in folder.iterdir():
-        if file.is_file() and args.extension:
-            print(file.stem + file.suffix)
+        if file.is_file() and file.suffix == args.extension:
+            new_path = file.parent / (args.replacement + file.suffix)
+            new_path = unique_dest(new_path)
+            file.rename(new_path)
+
         elif file.is_dir() and args.recursive:
             search_folder(file)
 
 
-def replace():
-    pass
+def unique_dest(dest: Path):
+    if not dest.exists():
+        return dest
+    counter = 1
+    while True:
+        unique = dest.with_name(f"{dest.stem}({counter}){dest.suffix}")
+        if not unique.exists():
+            return unique
+        counter += 1
 
 
 def main():
     # check every file in folder
-    search_folder(path)
     # if recursive check every file in folders in folder
+    search_folder(path)
 
     # check if pattern or extension
     # if pattern replace based on regex
     # if extension replace based on extension
-
-    #
 
 
 if __name__ == "__main__":
